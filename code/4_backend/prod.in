@@ -1,0 +1,10 @@
+fastapi==0.68.1
+transformers==4.10.3
+numpy
+torch==1.9.1
+torchaudio==0.9.1
+torchvision==0.10.1
+uvicorn==0.15.0
+gunicorn==20.1.0
+
+

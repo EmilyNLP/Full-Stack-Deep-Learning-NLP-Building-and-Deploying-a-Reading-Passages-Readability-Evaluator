@@ -1,0 +1,197 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://unpkg.com/material-components-web@11.0.0/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@11.0.0/dist/material-components-web.min.js"></script>
+  <style type="text/css">
+    body {font-family: "Times New Roman", Georgia, Serif; font-size: 25}
+    h1, h2, h3, h4, h5, h6 {
+      font-family: "Playfair Display";
+      letter-spacing: 5px;
+    }
+    .topbar {
+      overflow: hidden;
+      position:fixed;
+      width:100%;
+      z-index:1;
+      top:0;
+      background-color: white;
+      box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    }   
+    .topbar a {
+      float: left;
+      display: block;
+      color: inherit;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 25px;
+    }
+    .topbar a:hover {
+      background: #ccc;
+      color: #000;
+    }
+    .right{
+      float:right!important
+    }
+    .content{
+      margin-left:auto;
+      margin-right:auto;
+      overflow: hidden;
+      margin-top: 80;
+    }
+    .padding-64{
+      padding-top:64px!important;
+      padding-bottom:64px!important
+    }
+    .col{
+      float: left;
+      width:50%;
+      display: inline-block;
+      *display: inline;
+    }
+    .padding-large{
+      padding:12px 24px!important;
+    }
+    .padding-small{
+      padding:4px 8px!important
+    }
+    .hide-small{
+      display:inline-block;
+    }
+    .image{
+      max-width:100%;
+      height:auto;
+      border-radius:4px;
+    }
+
+    .strongspan{  
+      font-size:25px;  
+    }
+
+    section {
+      width:100%;
+      float:left;
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 12px 20px;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      background-color: #f8f8f8;
+      font-size: 16px;
+      resize: none;
+    }
+    .sub-button {
+      background-color: #0b8acf; /* Green */
+      border: none;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 12px;
+      width:125;
+      font-size:25;
+    }
+    .sub-button:hover {
+      color: white;
+      background-color: #a5a8a5;
+      border: solid 1px #a5a8a5;
+      -webkit-transition: all 0.3s ease;
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+
+<body class="mdc-typography">
+
+  <!-- Navbar (sit on top) -->
+ 
+  <div class="topbar">
+      <a >Readability level Classifier </a>
+      <!-- Right-sided navbar links. Hide them on small screens -->    
+    <div class="right">
+      <a href="https://emilynlp.github.io/Emily-NLP-Blog/" target="_blank">Visit Emily's NLP Blog </a>
+    </a> -->
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="content" style="max-width:1200px">
+    <!-- About Section -->
+    <div margin-bottom="50px">
+      <div class="col">
+       <img src="images/bookself.jpg"  class="image"  alt="books" width="500" height="200"></a>
+      </div>
+      <div class="col">
+        <p font-size="20px" vertical-align="text-top">The task of this application is to evaluate the readability level of the input excerpt. It is powered by the SOTA Deep Learning Natural Language Processing technology. To make use of this application, simply input the excerpt into the text box below and press the submit button, then the readability level of this excerpt will be shown on the page. The level ranges from 1 to 12, which reflects from easy to hard.</p>      
+      </div>
+      <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate mdc-top-app-bar--fixed-adjust" aria-label="Markdown Rendering Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
+        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+          <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+      </div>
+    </div>
+    <!-- Operation Section -->
+    <section>
+      <p><textarea type="text" placeholder="Everyone must read for at least 30 minutes daily in our family!" id="excerpt" ></textarea></p>
+      <p><button class="sub-button"  id="submit" position="inherit">Submit</button></p>
+      <strong class="strongspan">The readability level is: </strong>
+      <span class="strongspan" id="level" > 5 </span>
+    </section>
+  </div>
+  <script>
+    const level = document.getElementById('level');
+    const lp = new mdc.linearProgress.MDCLinearProgress(document.querySelector('.mdc-linear-progress'));
+    lp.close();
+
+    async function predictor(data) {
+      const response = await fetch('/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"excerpt": data})
+      });
+
+      const text = await response.text();
+      if (!response.ok) {
+        console.log('error: Readability Predictor: Received status code: ' + response.status);
+      }
+
+      return text;
+    }
+
+    function listener() {
+      lp.open();
+
+      excerpt = document.getElementById('excerpt').value;
+
+      predictor(excerpt)
+      .then((result) => {
+        var json = JSON.parse(result);
+        level.innerHTML = json["level"];
+      })
+      .catch((err) => {
+        console.log('Readability Predictor: ' + err.message);
+        level.innerHTML = '<h3><i aria-hidden="true" class="material-icons">error</i>Predictor Error</h3>\n<p>' + err.message + '</p>';
+      })
+      .finally(() => lp.close())
+    }
+
+    document.querySelector('#submit').addEventListener('click', listener);  
+  </script>
+</body>
+</html>
