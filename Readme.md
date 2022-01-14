@@ -24,7 +24,7 @@ Before we start, please take a look of the demo of my application on the cloud o
 
 ![demo](/images/web/2.gif)
 
-You can find all the code under the folder of "code" in [my GitHub repository](https://github.com/EmilyNLP/Full-Stack-Deep-Learning-NLP-Application-Building-and-Cloud-Delploying). 
+You can find all the code under the folder of "code" in [my GitHub repository](https://github.com/EmilyNLP/Full-Stack-Deep-Learning-NLP-Building-and-Deploying-a-Reading-Passages-Readability-Evaluator). 
 
 ![directory](/images/intro/directory.png)
 
